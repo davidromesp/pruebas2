@@ -152,7 +152,27 @@ STATIC_URL = '/static/'
 
 # number of bits for the key, all auths should use the same number of bits
 KEYBITS = 256
+if 'TRAVIS' in os.environ:
+    try:
+        from local_settings_travis import *
+    except ImportError:
+        print("local_settings_travis.py not found")
+elif 'HEROKU' in os.environ:
+    try:
+        from local_settings_heroku import *
 
+        BASEURL = 'https://'+os.environ['REPO_NAME']+'.herokuapp.com/'
+
+        #Heroku (Esta configuración debe ir aquí)
+        import django_heroku
+        django_heroku.settings(locals())
+    except ImportError:
+        print("local_settings_heroku.py not found")
+else:
+    try:
+        from local_settings import *
+    except ImportError:
+        print("local_settings.example.py not found")
 try:
     from local_settings import *
 except ImportError:
